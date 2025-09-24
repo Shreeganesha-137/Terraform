@@ -1,0 +1,33 @@
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.log
+*.zip
+# .gitignore
+bin/terraform.exe
+static_web_project/.terraform/
+.tfstate
+.tfstate.backup
+.log
+.zip
+# .gitignore
+.terraform/
+*.exe
+*.zip
+*.tar.gz
+
+# Ignore Terraform build artifacts
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Ignore binaries and large files
+*.exe
+*.zip
+*.tar.gz
+*.log
+
+# Ignore system files
+.DS_Store
+Thumbs.db
