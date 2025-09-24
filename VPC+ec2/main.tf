@@ -7,55 +7,75 @@ terraform {
   }
 }
 
-# Configure the AWS Provider
 provider "aws" {
   region = "ap-south-1"
 }
 
+# VPC
 resource "aws_vpc" "my_vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
   tags = {
     Name = "my_vpc"
   }
 }
 
-#privite subnet
-resource "aws_subnet" "privite_subnet" {
+# Private Subnet
+resource "aws_subnet" "private_subnet" {
   vpc_id            = aws_vpc.my_vpc.id
   cidr_block        = "10.0.1.0/24"
+  availability_zone = "ap-south-1a"
   tags = {
-    Name = "privite_subnet"
+    Name = "private_subnet"
   }
-  
 }
 
-#public subnet
+# Public Subnet
 resource "aws_subnet" "public_subnet" {
   vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = "10.0.1.0/24"
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = "ap-south-1b"
   tags = {
     Name = "public_subnet"
   }
-  
 }
 
+# Internet Gateway
 resource "aws_internet_gateway" "my_igw" {
   vpc_id = aws_vpc.my_vpc.id
   tags = {
     Name = "my_igw"
   }
-  
 }
 
+# Route Table
 resource "aws_route_table" "my_rt" {
   vpc_id = aws_vpc.my_vpc.id
-  route = {
+
+  route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.my_igw.id
-    subnet_id = aws_subnet.public_subnet.id
+  }
+
+  tags = {
+    Name = "public_rt"
   }
 }
-resource "aws_route_table_association" "a" {
+
+# Route Table Association
+resource "aws_route_table_association" "public_assoc" {
   subnet_id      = aws_subnet.public_subnet.id
   route_table_id = aws_route_table.my_rt.id
+}
+
+resource "aws_instance" "terraform_auto" {
+  ami          = "ami-02d26659fd82cf299"
+  instance_type = "t2.micro"
+  subnet_id = aws_subnet.public_subnet.id
+  associate_public_ip_address = true
+  
+  tags = {
+   Name = "terraform"
+  }
 }
