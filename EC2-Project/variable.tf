@@ -4,7 +4,7 @@
 variable "aws_region" {
   description = "The AWS region to deploy resources in"
   type        = string
-  default     = "us-east-1"
+  default     = "ap-south-1"
 }
 
 variable "vpc_cidr" {
@@ -12,7 +12,7 @@ variable "vpc_cidr" {
   type        = string
   default     = "10.0.0.0/16"
 }
-
+ 
 variable "subnet_cidr" {
   description = "The CIDR block for the public subnet"
   type        = string
@@ -28,13 +28,13 @@ variable "instance_type" {
 variable "ami_id" {
   description = "The AMI ID for the EC2 instance (Amazon Linux 2 in us-east-1)"
   type        = string
-  default     = "ami-0abcdef1234567890"  # Replace with a valid AMI ID for your region
+  default     = "ami-02d26659fd82cf299"  # Replace with a valid AMI ID for your region
 }
 
 variable "key_name" {
   description = "The name of the SSH key pair"
   type        = string
-  default     = "my-key-pair"  # Create this in AWS console first
+  default     = "keyg"  # Create this in AWS console first
 }
 
 variable "instance_name" {
