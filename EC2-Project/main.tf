@@ -1,13 +1,11 @@
 
-# main.tf
-# This file defines the main resources, including VPC, subnet, EC2 instance, etc.
-
 # Create a VPC
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
+  region = var.aws_region
   enable_dns_support   = true
   enable_dns_hostnames = true
- 
+
   tags = {
     Name = "my-vpc"
   }
@@ -26,7 +24,7 @@ resource "aws_internet_gateway" "gw" {
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.subnet_cidr
-  availability_zone       = "${var.aws_region}a"  # Use AZ a; adjust as needed
+  availability_zone       = "${var.aws_region}a"  # can replace with data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
 
   tags = {
@@ -64,7 +62,21 @@ resource "aws_security_group" "allow_ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow from anywhere; restrict in production
+    cidr_blocks = ["0.0.0.0/0"]  # change to [var.my_ip] for safety
+
+  }
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # change to [var.my_ip] for safety
+  }
+
+ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # change to [var.my_ip] for safety
   }
 
   egress {
@@ -92,9 +104,14 @@ resource "aws_instance" "example" {
     Name = var.instance_name
   }
 
-  # Optional: User data script to run on instance launch
   user_data = <<-EOF
               #!/bin/bash
-              echo "Hello, World!" > /var/www/html/index.html
+              sudo apt update -y
+              sudo apt install -y apache2
+              sudo systemctl start apache2
+              sudo systemctl enable apache2
+              echo "Hello, World! This is Shree star creations. Subscribe to my YouTube Channel!" > /var/www/html/index.html
               EOF
 }
+
+
